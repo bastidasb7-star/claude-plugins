@@ -1,13 +1,15 @@
 # qa-kit
 
-A small Claude Code plugin with two quality helpers: a command that summarises the changes on your branch, and a subagent that reviews recent code.
+A small Claude Code plugin with two quality helpers that work in any language: a command that summarises the changes on your branch, and a subagent that reviews recent code.
+
+Install: `/plugin marketplace add bastidasb7-star/claude-plugins` then `/plugin install qa-kit@bryan-plugins`.
 
 ## What it adds
 
 | Component | Type | What it does |
 |---|---|---|
-| `/qa-kit:summarize-changes` | Slash command | Lists each file touched on the current branch with a one-line description of the change. The output is short enough to paste into a pull-request description. |
-| `code-reviewer` | Subagent | Reviews recent changes for bugs, missing error handling and unclear names. Returns findings grouped by severity (high, medium, low), each naming the file and the fix. Uses read-only tools (Read, Grep, Glob). |
+| `/qa-kit:summarize-changes` | Slash command | Compares the branch with its base (`/qa-kit:summarize-changes [base]`, default: the repo default branch) using git only, and returns a PR-ready summary: what the branch does, one line per file, and notes on breaking changes, migrations or new dependencies. |
+| `code-reviewer` | Subagent | Reviews recent changes in any language for bugs, missing error handling, unclear names and obvious security issues, using each language's idioms. Returns findings grouped by severity (high, medium, low), each naming the file and the fix. Uses read-only tools (Read, Grep, Glob). |
 
 ## Structure
 
@@ -22,7 +24,7 @@ A small Claude Code plugin with two quality helpers: a command that summarises t
 └── README.md
 ```
 
-Only `plugin.json` lives inside `.claude-plugin/`. The component folders sit at the repo root.
+Only `plugin.json` lives inside `.claude-plugin/`. The component folders sit at the plugin root.
 
 ## Usage
 

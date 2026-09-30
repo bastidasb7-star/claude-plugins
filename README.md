@@ -1,6 +1,6 @@
 # claude-plugins
 
-Marketplace de plugins de Claude Code de Bryan Bastidas.
+Marketplace de plugins de Claude Code de Bryan Bastidas. Todos los plugins funcionan con cualquier lenguaje: detectan el stack del proyecto (JS/TS, Python, Go, Rust, Java/Kotlin, C#, PHP, Ruby…) y usan sus propias herramientas.
 
 ## Instalar
 
@@ -17,8 +17,8 @@ Para actualizar después de un cambio: `/plugin marketplace update bryan-plugins
 
 | Plugin | Qué incluye | Uso |
 |--------|-------------|-----|
-| [qa-kit](plugins/qa-kit) | Comando `summarize-changes` + subagente `code-reviewer` (solo lectura) | `/qa-kit:summarize-changes` antes de abrir un PR |
-| [quality-flow](plugins/quality-flow) | 3 subagentes (reviewer, coverage-mapper, test-writer), comando `audit`, skill `api-test-conventions`, hook de ESLint | `/quality-flow:audit <ruta-de-la-api>` |
+| [qa-kit](plugins/qa-kit) | Comando `summarize-changes` (resumen de la rama para el PR, solo git) + subagente `code-reviewer` (solo lectura, cualquier lenguaje) | `/qa-kit:summarize-changes [rama-base]` antes de abrir un PR |
+| [quality-flow](plugins/quality-flow) | 3 subagentes (reviewer, coverage-mapper, test-writer), comando `audit`, skill `test-conventions` con referencia por lenguaje, hook de lint multi-lenguaje (ESLint, ruff/flake8, gofmt, php -l, ruby -wc, shellcheck, JSON) | `/quality-flow:audit [ruta]` en cualquier proyecto |
 | [project-memory](plugins/project-memory) | Skill `project-bootstrap` + script que genera `AGENTS.md`, `CLAUDE.md` y `docs/` (estado, handoff, arquitectura…) | `/project-memory:project-bootstrap` en la raíz de un repo |
 
 ## Estructura

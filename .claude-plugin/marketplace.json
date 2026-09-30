@@ -10,14 +10,14 @@
     {
       "name": "qa-kit",
       "source": "./plugins/qa-kit",
-      "description": "Summarise branch changes and review recent code for bugs.",
-      "version": "0.1.0"
+      "description": "Summarise branch changes for a PR and review recent code for bugs — any language.",
+      "version": "0.2.0"
     },
     {
       "name": "quality-flow",
       "source": "./plugins/quality-flow",
-      "description": "Review, map test gaps and write missing tests for an Express API with one command.",
-      "version": "0.1.0"
+      "description": "Review, map test gaps and write missing tests in any language (JS/TS, Python, Go, Rust, Java, C#, PHP, Ruby) with one command.",
+      "version": "0.2.0"
     },
     {
       "name": "project-memory",

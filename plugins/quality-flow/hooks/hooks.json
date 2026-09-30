@@ -1,5 +1,5 @@
 {
-  "description": "Lint every JavaScript file Claude writes or edits with the project's own ESLint.",
+  "description": "Lint every file Claude writes or edits with the linter its language already has installed (ESLint, ruff/flake8, gofmt, php -l, ruby -wc, shellcheck, JSON parse).",
   "hooks": {
     "PostToolUse": [
       {

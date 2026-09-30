@@ -1,11 +1,11 @@
 {
   "name": "quality-flow",
-  "version": "0.1.0",
-  "description": "Code-quality workflow for Express APIs: a read-only reviewer and coverage mapper run in parallel, then a test writer turns their findings into passing tests.",
+  "version": "0.2.0",
+  "description": "Code-quality workflow for any language: a read-only reviewer and coverage mapper run in parallel, then a test writer adds the missing tests with the project's own runner.",
   "author": {
     "name": "Bryan Bastidas"
   },
-  "repository": "https://github.com/bastidasb7-star/claude-multi-agent-workflow",
+  "repository": "https://github.com/bastidasb7-star/claude-plugins",
   "license": "MIT",
-  "keywords": ["code-quality", "review", "testing", "express", "subagents"]
+  "keywords": ["code-quality", "review", "testing", "subagents", "multi-language", "lint"]
 }
