@@ -1,0 +1,23 @@
+{
+  "name": "bryan-plugins",
+  "owner": {
+    "name": "Bryan Bastidas"
+  },
+  "metadata": {
+    "description": "Plugins personales de Claude Code de Bryan Bastidas."
+  },
+  "plugins": [
+    {
+      "name": "qa-kit",
+      "source": "./plugins/qa-kit",
+      "description": "Summarise branch changes and review recent code for bugs.",
+      "version": "0.1.0"
+    },
+    {
+      "name": "quality-flow",
+      "source": "./plugins/quality-flow",
+      "description": "Review, map test gaps and write missing tests for an Express API with one command.",
+      "version": "0.1.0"
+    }
+  ]
+}
