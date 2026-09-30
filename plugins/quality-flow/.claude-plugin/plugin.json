@@ -1,11 +1,18 @@
 {
   "name": "quality-flow",
-  "version": "0.2.1",
-  "description": "Code-quality workflow for any language: a read-only reviewer and coverage mapper run in parallel, then a test writer adds the missing tests with the project's own runner.",
+  "version": "0.2.2",
+  "description": "Flujo de calidad para cualquier lenguaje: un revisor y un mapeador de cobertura de solo lectura en paralelo, y después un escritor de tests que añade los que faltan con el runner del propio proyecto.",
   "author": {
     "name": "Bryan Bastidas"
   },
   "repository": "https://github.com/bastidasb7-star/claude-plugins",
   "license": "MIT",
-  "keywords": ["code-quality", "review", "testing", "subagents", "multi-language", "lint"]
+  "keywords": [
+    "code-quality",
+    "review",
+    "testing",
+    "subagents",
+    "multi-language",
+    "lint"
+  ]
 }

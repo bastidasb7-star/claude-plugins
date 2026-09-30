@@ -1,6 +1,8 @@
 {
   "name": "qa-kit",
-  "version": "0.2.0",
-  "description": "Summarise branch changes for a PR and review recent code for bugs — any language.",
-  "author": { "name": "Bryan Bastidas" }
+  "version": "0.2.1",
+  "description": "Resume los cambios de la rama para el PR y revisa el código reciente buscando bugs, en cualquier lenguaje.",
+  "author": {
+    "name": "Bryan Bastidas"
+  }
 }

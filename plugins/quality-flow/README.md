@@ -1,90 +1,97 @@
 # quality-flow
 
-A Claude Code plugin that runs a **code-quality workflow on any codebase, in any language**: two read-only subagents review the code and map test coverage in parallel, then a test-writing subagent turns their findings into passing tests using the project's own test runner.
+Plugin de Claude Code que ejecuta un **flujo de calidad de código sobre cualquier proyecto, en cualquier lenguaje**: dos subagentes de solo lectura revisan el código y mapean la cobertura de tests en paralelo, y después un subagente escritor convierte sus hallazgos en tests que pasan, usando el runner de tests del propio proyecto.
 
-Works with JavaScript/TypeScript, Python, Go, Rust, Java/Kotlin, C#/.NET, PHP and Ruby — web APIs (endpoints and status codes) as well as libraries and CLIs (public functions and their error cases).
+Funciona con JavaScript/TypeScript, Python, Go, Rust, Java/Kotlin, C#/.NET, PHP y Ruby: APIs web (endpoints y códigos de estado) y también librerías y CLIs (funciones públicas y sus casos de error).
 
-Part of the [bryan-plugins](../../README.md) marketplace. First built and tested against an Express API in [bastidasb7-star/claude-multi-agent-workflow](https://github.com/bastidasb7-star/claude-multi-agent-workflow).
+Forma parte del marketplace [bryan-plugins](../../README.md). Se creó y probó primero sobre una API Express en [bastidasb7-star/claude-multi-agent-workflow](https://github.com/bastidasb7-star/claude-multi-agent-workflow).
 
-## Install
+## Instalar
 
 ```text
 /plugin marketplace add bastidasb7-star/claude-plugins
 /plugin install quality-flow@bryan-plugins
 ```
 
-Or load it straight from a clone of this repo, without installing:
+Desde la terminal (por ejemplo, si usas la extensión de VS Code, donde `/plugin` no está disponible):
+
+```bash
+claude plugin marketplace add bastidasb7-star/claude-plugins
+claude plugin install quality-flow@bryan-plugins
+```
+
+O cargarlo directamente desde un clon de este repo, sin instalarlo:
 
 ```bash
 claude --plugin-dir plugins/quality-flow
 ```
 
-## Usage
+## Uso
 
 ```text
-/quality-flow:audit                 # audit the current project
-/quality-flow:audit services/api    # audit one folder (e.g. one project of a monorepo)
+/quality-flow:audit                 # audita el proyecto actual
+/quality-flow:audit services/api    # audita una carpeta (p. ej. un proyecto de un monorepo)
 ```
 
-## What's inside
+## Contenido
 
-| Component | Name (namespaced) | What it does |
-|-----------|-------------------|--------------|
-| Command | `/quality-flow:audit [path]` | Detects the stack and runs the whole workflow. |
-| Subagent | `quality-flow:code-reviewer` | Read-only (`Read, Grep, Glob`, opus). Finds bugs, missing validation, error-handling and security issues in the idiom of each language. |
-| Subagent | `quality-flow:coverage-mapper` | Read-only (`Read, Grep, Glob`, haiku). Maps endpoints or public functions and their outcomes against existing tests. |
-| Subagent | `quality-flow:test-writer` | Writer (`Read, Grep, Glob, Edit, Write, Bash`, sonnet). Adds the missing tests with the project's runner and runs the suite until green. |
-| Skill | `quality-flow:test-conventions` | Language-agnostic testing rules + a per-language reference (runner, file layout, HTTP test client, how to mark known bugs). |
-| Hook | `PostToolUse` on `Write\|Edit\|MultiEdit` | Lints each edited file with the linter its language already has (see below) and feeds errors back to Claude. |
+| Componente | Nombre (con namespace) | Qué hace |
+|------------|------------------------|----------|
+| Comando | `/quality-flow:audit [ruta]` | Detecta el stack y ejecuta el flujo completo. |
+| Subagente | `quality-flow:code-reviewer` | Solo lectura (`Read, Grep, Glob`, opus). Encuentra bugs, validaciones que faltan y problemas de manejo de errores y seguridad, con el estilo de cada lenguaje. |
+| Subagente | `quality-flow:coverage-mapper` | Solo lectura (`Read, Grep, Glob`, haiku). Cruza endpoints o funciones públicas y sus resultados con los tests existentes. |
+| Subagente | `quality-flow:test-writer` | Escritor (`Read, Grep, Glob, Edit, Write, Bash`, sonnet). Añade los tests que faltan con el runner del proyecto y ejecuta la suite hasta que pasa. |
+| Skill | `quality-flow:test-conventions` | Reglas de testing válidas para cualquier lenguaje + una referencia por lenguaje (runner, ubicación de archivos, cliente HTTP de tests, cómo marcar bugs conocidos). |
+| Hook | `PostToolUse` en `Write\|Edit\|MultiEdit` | Pasa el linter de su lenguaje a cada archivo editado (ver abajo) y le devuelve los errores a Claude. |
 
-## The workflow
+## El flujo
 
 ```text
-/quality-flow:audit [path]
+/quality-flow:audit [ruta]
 
-  Step 0  detect stack (language, framework, test command)
-  Step 1 (parallel)   code-reviewer ─┐
-                      coverage-mapper ┘─► Step 2 (dependent) test-writer ─► Step 3 report
+  Paso 0  detectar stack (lenguaje, framework, comando de tests)
+  Paso 1 (paralelo)    code-reviewer ─┐
+                       coverage-mapper ┘─► Paso 2 (dependiente) test-writer ─► Paso 3 informe
 ```
 
-1. **Review + coverage map** run at the same time — both only read the code.
-2. **Test writer** starts only after both return, using their gaps and findings as its input.
-3. The main session merges everything into one report: findings, coverage before/after, suite result, bugs to fix next.
+1. **Revisión + mapa de cobertura** se ejecutan a la vez: los dos solo leen el código.
+2. **El test-writer** empieza solo cuando ambos terminan, usando sus huecos y hallazgos como entrada.
+3. La sesión principal une todo en un informe: hallazgos, cobertura antes/después, resultado de la suite y bugs a corregir.
 
-Tests that expose real bugs are kept and marked with the runner's own mechanism (`todo`, `xfail`, `t.Skip`, `#[ignore]`, `@Disabled`, `Skip =`, `pending`…) so the suite stays green and the bug stays visible. Application code is never modified.
+Los tests que revelan bugs reales se mantienen y se marcan con el mecanismo del propio runner (`todo`, `xfail`, `t.Skip`, `#[ignore]`, `@Disabled`, `Skip =`, `pending`…), para que la suite siga en verde y el bug siga visible. El código de la aplicación nunca se modifica.
 
-## Lint hook — supported languages
+## Hook de lint — lenguajes soportados
 
-The hook uses only tools the project or machine already has; if none is found it does nothing.
+El hook solo usa herramientas que el proyecto o el equipo ya tienen; si no encuentra ninguna, no hace nada.
 
-| Files | Tools tried, in order |
-|-------|-----------------------|
-| `.js .jsx .mjs .cjs .ts .tsx .mts .cts .vue` | project-local ESLint (`node_modules`) |
-| `.py` | `ruff` (project `.venv` or PATH) → `flake8` → `python -m py_compile` |
+| Archivos | Herramientas que prueba, en orden |
+|----------|-----------------------------------|
+| `.js .jsx .mjs .cjs .ts .tsx .mts .cts .vue` | ESLint local del proyecto (`node_modules`) |
+| `.py` | `ruff` (`.venv` del proyecto o PATH) → `flake8` → `python -m py_compile` |
 | `.go` | `gofmt -e` |
 | `.php` | `php -l` |
 | `.rb` | `ruby -wc` |
 | `.sh .bash` | `shellcheck` → `bash -n` |
-| `.json` | built-in JSON parse (skips `tsconfig`, `.vscode`, etc., which allow comments) |
+| `.json` | parseo JSON interno (omite `tsconfig`, `.vscode`, etc., que admiten comentarios) |
 
-The hook script runs on Node.js when it is on the PATH; without Node the hook is skipped silently. Compiled languages (Java, C#, Rust, C/C++) are checked by the test-writer's build/test run instead of per edit.
+El script del hook se ejecuta con Node.js si está en el PATH; sin Node, el hook se omite en silencio. Los lenguajes compilados (Java, C#, Rust, C/C++) se comprueban con el build/tests que ejecuta el test-writer, no en cada edición.
 
-## Layout
+## Estructura
 
 ```text
 .claude-plugin/plugin.json
 agents/                # code-reviewer, coverage-mapper, test-writer
-commands/audit.md      # the workflow command
+commands/audit.md      # el comando del flujo
 skills/test-conventions/
   SKILL.md
   references/languages.md
-hooks/hooks.json       # uses ${CLAUDE_PLUGIN_ROOT}/scripts/lint-on-edit.js
+hooks/hooks.json       # usa ${CLAUDE_PLUGIN_ROOT}/scripts/lint-on-edit.js
 scripts/lint-on-edit.js
-NOTES.md               # design notes
+NOTES.md               # decisiones de diseño
 ```
 
-## Versioning
+## Versiones
 
-The version lives in `.claude-plugin/plugin.json` (and is mirrored in the marketplace entry). Bump it on every release so installed copies pick up the update with `/plugin marketplace update bryan-plugins`.
+La versión está en `.claude-plugin/plugin.json` (y se repite en la entrada del marketplace). Hay que subirla en cada publicación para que las copias instaladas reciban la actualización con `/plugin marketplace update bryan-plugins`.
 
-See [NOTES.md](NOTES.md) for the design decisions.
+Ver [NOTES.md](NOTES.md) para las decisiones de diseño.

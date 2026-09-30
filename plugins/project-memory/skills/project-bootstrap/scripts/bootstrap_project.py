@@ -80,7 +80,7 @@ def main():
     parser.add_argument("project", nargs="?", default=".", help="Ruta del proyecto")
     parser.add_argument("--check", action="store_true", help="Solo comprobar, no crear nada")
     args = parser.parse_args()
-    # Windows consoles default to a legacy code page; keep accents readable.
+    # La consola de Windows usa por defecto una página de códigos antigua; así se ven bien las tildes.
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
 

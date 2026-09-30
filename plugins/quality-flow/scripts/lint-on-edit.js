@@ -1,19 +1,19 @@
 #!/usr/bin/env node
-// PostToolUse hook: check the file Claude just wrote or edited with a linter
-// for its language. It only uses tools the project or machine already has
-// (the plugin ships no linters) and tries them in order until one is found:
+// Hook PostToolUse: revisa con el linter de su lenguaje el archivo que Claude
+// acaba de escribir o editar. Solo usa herramientas que el proyecto o el equipo
+// ya tienen (el plugin no incluye linters) y las prueba en orden hasta encontrar una:
 //
-//   JS/TS/Vue  -> project-local ESLint (node_modules, walking up from the file)
-//   Python     -> ruff (project .venv or PATH) -> flake8 -> python -m py_compile
-//   Go         -> gofmt -e (syntax errors)
+//   JS/TS/Vue  -> ESLint local del proyecto (node_modules, subiendo desde el archivo)
+//   Python     -> ruff (.venv del proyecto o PATH) -> flake8 -> python -m py_compile
+//   Go         -> gofmt -e (errores de sintaxis)
 //   PHP        -> php -l
 //   Ruby       -> ruby -wc
 //   Shell      -> shellcheck -> bash -n
-//   JSON       -> built-in parse
+//   JSON       -> parseo interno
 //
-// Exit 2 feeds the problems back to Claude. Anything else (unknown language,
-// no tool installed, tool crashed, bad input) exits 0 silently so the hook
-// never gets in the way.
+// El código de salida 2 le devuelve los problemas a Claude. Cualquier otro caso
+// (lenguaje desconocido, herramienta no instalada o que falla, entrada inválida)
+// termina con 0 en silencio, para que el hook nunca estorbe.
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');
@@ -29,7 +29,7 @@ function readStdin() {
   }
 }
 
-// Walk up from `startDir` and return the first existing `relPath`.
+// Sube desde `startDir` y devuelve la primera ruta de `relPaths` que exista.
 function findUp(startDir, relPaths) {
   let dir = startDir;
   for (;;) {
@@ -43,22 +43,22 @@ function findUp(startDir, relPaths) {
   }
 }
 
-// Run without a shell so paths with spaces or "&" are safe on every OS.
-// Returns null when the tool isn't installed or crashed/timed out.
+// Se ejecuta sin shell para que las rutas con espacios o "&" funcionen en cualquier SO.
+// Devuelve null si la herramienta no está instalada, falló o superó el tiempo límite.
 function run(cmd, args, cwd) {
   const res = spawnSync(cmd, args, { cwd, encoding: 'utf8', timeout: TIMEOUT_MS, windowsHide: true });
   if (res.error) return null;
   return { status: res.status, output: `${res.stdout || ''}${res.stderr || ''}`.trim() };
 }
 
-// Each checker returns { tool, output } when it found problems, false when the
-// file is clean, or null when it couldn't run (so the next one is tried).
+// Cada comprobador devuelve { tool, output } si encontró problemas, false si el
+// archivo está limpio, o null si no pudo ejecutarse (y entonces se prueba el siguiente).
 const checkers = {
   eslint(file, dir) {
     const found = findUp(dir, [path.join('node_modules', 'eslint', 'bin', 'eslint.js')]);
     if (!found) return null;
     const res = run(process.execPath, [found.file, '--no-warn-ignored', file], found.root);
-    if (!res || res.status === 2) return null; // 2 = ESLint config/crash, not the file's fault
+    if (!res || res.status === 2) return null; // 2 = error de config/fallo de ESLint, no del archivo
     return res.status === 1 ? { tool: 'ESLint', output: res.output } : false;
   },
   ruff(file, dir) {
@@ -134,18 +134,18 @@ if (!rawPath) process.exit(0);
 const file = path.resolve(rawPath);
 const chain = BY_EXTENSION[path.extname(file).toLowerCase()];
 if (!chain || !fs.existsSync(file)) process.exit(0);
-// Skip JSON files that allow comments/trailing commas.
+// Omitir los JSON que admiten comentarios o comas finales.
 if (/(^|[\\/])(tsconfig[^\\/]*|jsconfig|\.eslintrc|devcontainer)\.json$/i.test(file) || file.includes(`${path.sep}.vscode${path.sep}`)) {
   process.exit(0);
 }
 
 for (const name of chain) {
   const result = checkers[name](file, path.dirname(file));
-  if (result === null) continue; // tool not available, try the next one
+  if (result === null) continue; // herramienta no disponible, probar la siguiente
   if (result) {
-    process.stderr.write(`${result.tool} found problems in ${rawPath}:\n${result.output}\n`);
+    process.stderr.write(`${result.tool} encontró problemas en ${rawPath}:\n${result.output}\n`);
     process.exit(2);
   }
-  break; // clean
+  break; // limpio
 }
 process.exit(0);

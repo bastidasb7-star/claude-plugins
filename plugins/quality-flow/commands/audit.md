@@ -1,44 +1,44 @@
 ---
-description: Run the quality workflow on any codebase (any language) — review and coverage mapping in parallel, then write the missing tests.
-argument-hint: "[path to audit, default: current project]"
+description: Ejecuta el flujo de calidad sobre cualquier código (cualquier lenguaje): revisión y mapa de cobertura en paralelo, y después escribe los tests que faltan.
+argument-hint: "[ruta a auditar, por defecto: el proyecto actual]"
 ---
 
-Run the **quality-flow** workflow on `$ARGUMENTS`. If no path was given, use the current working directory. Every subagent below must be told this path and must work inside it.
+Ejecuta el flujo **quality-flow** sobre `$ARGUMENTS`. Si no se indicó ruta, usa el directorio de trabajo actual. A cada subagente de abajo hay que darle esta ruta y debe trabajar dentro de ella.
 
-## Step 0 — Detect the stack (you, quickly)
+## Paso 0 — Detectar el stack (tú, rápido)
 
-Glob the manifests at the path (`package.json`, `pyproject.toml`, `requirements*.txt`, `go.mod`, `Cargo.toml`, `pom.xml`, `build.gradle*`, `*.csproj`, `composer.json`, `Gemfile`…) and note the language(s), framework and test command. Pass this one-line summary to every subagent. If the path holds several projects (a monorepo), list them and audit each one the user cares about — ask if unclear.
+Busca los manifiestos en la ruta (`package.json`, `pyproject.toml`, `requirements*.txt`, `go.mod`, `Cargo.toml`, `pom.xml`, `build.gradle*`, `*.csproj`, `composer.json`, `Gemfile`…) y anota lenguaje(s), framework y comando de tests. Pasa este resumen de una línea a cada subagente. Si la ruta contiene varios proyectos (un monorepo), lístalos y audita los que le interesan al usuario; pregunta si no está claro.
 
-## Step 1 — Review and map coverage (in parallel)
+## Paso 1 — Revisión y mapa de cobertura (en paralelo)
 
-These two jobs are independent and read-only, so start them **at the same time, in a single message with two Agent calls**:
+Estos dos trabajos son independientes y de solo lectura, así que lánzalos **a la vez, en un único mensaje con dos llamadas a Agent**:
 
-- **code-reviewer** subagent: review the code at the path and return its findings table plus "Behaviours worth a test".
-- **coverage-mapper** subagent: map every unit (endpoints, or public functions/classes/commands) and outcome against the existing tests and return the coverage table, the gaps, the run command, the test file(s) to extend and the test style.
+- Subagente **code-reviewer**: revisa el código de la ruta y devuelve su tabla de hallazgos y la sección "Comportamientos que merecen un test".
+- Subagente **coverage-mapper**: cruza cada unidad (endpoints, o funciones/clases/comandos públicos) y sus resultados con los tests existentes y devuelve la tabla de cobertura, los huecos, el comando para ejecutar, los archivos de test a ampliar y el estilo de los tests.
 
-Wait until **both** have returned before moving on. If either fails, stop and report which one and why.
+Espera a que **ambos** hayan terminado antes de seguir. Si alguno falla, detente e informa cuál y por qué.
 
-## Step 2 — Write the missing tests (depends on Step 1)
+## Paso 2 — Escribir los tests que faltan (depende del Paso 1)
 
-Start the **test-writer** subagent only after Step 1 is complete. Pass it, verbatim:
+Lanza el subagente **test-writer** solo cuando el Paso 1 haya terminado. Pásale, tal cual:
 
-1. the path and the stack summary;
-2. the coverage-mapper's "Gaps", run command, "Test file(s) to extend" and "Test style";
-3. the code-reviewer's "Behaviours worth a test" and any high/medium findings.
+1. la ruta y el resumen del stack;
+2. del coverage-mapper: "Huecos", comando para ejecutar, "Archivo(s) de test a ampliar" y "Estilo de los tests";
+3. del code-reviewer: "Comportamientos que merecen un test" y los hallazgos de severidad alta/media.
 
-Tell it to remove duplicates between the two lists, add the tests, and run the suite until it is green (marking tests that expose real application bugs as expected-to-fail/skipped with the runner's own mechanism).
+Indícale que elimine duplicados entre ambas listas, añada los tests y ejecute la suite hasta que pase (marcando como fallo esperado/omitido, con el mecanismo del propio runner, los tests que revelen bugs reales de la aplicación).
 
-## Step 3 — Report
+## Paso 3 — Informe
 
-Do this yourself, without another subagent. Combine the three results into one short report:
+Hazlo tú, sin otro subagente. Combina los tres resultados en un informe breve:
 
 ```
-# quality-flow audit — <path> (<language> · <framework>)
+# Auditoría quality-flow — <ruta> (<lenguaje> · <framework>)
 
-## Review findings            (from code-reviewer)
-## Coverage before → after    (gaps from coverage-mapper, tests added by test-writer)
-## Suite result               (from test-writer, with the command used)
-## Bugs to fix next           (reviewer findings confirmed by a failing/xfail test first)
+## Hallazgos de la revisión        (del code-reviewer)
+## Cobertura antes → después       (huecos del coverage-mapper, tests añadidos por el test-writer)
+## Resultado de la suite           (del test-writer, con el comando usado)
+## Bugs a corregir después         (hallazgos confirmados primero por un test fallido/xfail)
 ```
 
-Do not modify application code in this workflow — only the test-writer changes files, and only test files.
+En este flujo no se modifica el código de la aplicación: solo el test-writer cambia archivos, y solo archivos de test.

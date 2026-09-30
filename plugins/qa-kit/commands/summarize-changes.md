@@ -1,25 +1,25 @@
 ---
-description: Summarise what changed on the current branch, ready to paste into a PR description.
-argument-hint: "[base branch, default: the repo's default branch]"
+description: Resume lo que cambió en la rama actual, listo para pegar en la descripción de un PR.
+argument-hint: "[rama base, por defecto: la rama principal del repo]"
 ---
 
-Summarise the changes on the current branch. This works for any language or project type — it only uses git.
+Resume los cambios de la rama actual. Funciona con cualquier lenguaje o tipo de proyecto: solo usa git.
 
-1. Pick the base branch: `$ARGUMENTS` if given; otherwise the remote default branch (`git symbolic-ref refs/remotes/origin/HEAD`), falling back to `main` or `master`.
-2. Collect the changes with `git diff --stat <base>...HEAD` and `git log --oneline <base>..HEAD`. Include uncommitted changes (`git status --short`) and mark them as such.
-3. Read the diffs you need to understand each change. Don't guess from file names.
+1. Elegir la rama base: `$ARGUMENTS` si se indicó; si no, la rama por defecto del remoto (`git symbolic-ref refs/remotes/origin/HEAD`), y si no existe, `main` o `master`.
+2. Reunir los cambios con `git diff --stat <base>...HEAD` y `git log --oneline <base>..HEAD`. Incluir también los cambios sin commit (`git status --short`) y marcarlos como tales.
+3. Leer los diffs necesarios para entender cada cambio. No adivinar por el nombre del archivo.
 
-Return Markdown that can be pasted straight into a pull request:
+Devolver Markdown que se pueda pegar directamente en un pull request, en el idioma de la conversación:
 
 ```
-## Summary
-<1–2 sentences on what this branch does and why>
+## Resumen
+<1–2 frases sobre qué hace esta rama y por qué>
 
-## Changes
-- `path/to/file` — <one-line description of what changed>
+## Cambios
+- `ruta/al/archivo` — <descripción en una línea de lo que cambió>
 
-## Notes
-- <breaking changes, migrations, new dependencies, config/env changes, or "None">
+## Notas
+- <cambios incompatibles, migraciones, dependencias nuevas, cambios de config/variables de entorno, o "Ninguna">
 ```
 
-Group files by area (for example `src/`, `tests/`, `docs/`, config) when there are more than about 10. Keep it short.
+Si hay más de unos 10 archivos, agruparlos por área (por ejemplo `src/`, `tests/`, `docs/`, configuración). Mantenerlo breve.

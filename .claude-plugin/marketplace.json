@@ -4,26 +4,26 @@
     "name": "Bryan Bastidas"
   },
   "metadata": {
-    "description": "Plugins personales de Claude Code de Bryan Bastidas."
+    "description": "Plugins personales de Claude Code de Bryan Bastidas, para cualquier lenguaje."
   },
   "plugins": [
     {
       "name": "qa-kit",
       "source": "./plugins/qa-kit",
-      "description": "Summarise branch changes for a PR and review recent code for bugs — any language.",
-      "version": "0.2.0"
+      "description": "Resume los cambios de la rama para el PR y revisa el código reciente buscando bugs, en cualquier lenguaje.",
+      "version": "0.2.1"
     },
     {
       "name": "quality-flow",
       "source": "./plugins/quality-flow",
-      "description": "Review, map test gaps and write missing tests in any language (JS/TS, Python, Go, Rust, Java, C#, PHP, Ruby) with one command.",
-      "version": "0.2.1"
+      "description": "Revisa el código, mapea los huecos de tests y escribe los tests que faltan en cualquier lenguaje (JS/TS, Python, Go, Rust, Java, C#, PHP, Ruby) con un solo comando.",
+      "version": "0.2.2"
     },
     {
       "name": "project-memory",
       "source": "./plugins/project-memory",
-      "description": "Create and maintain a project's technical memory in any language or stack (AGENTS.md, PROJECT_STATE, SESSION_HANDOFF…) for continuity across sessions.",
-      "version": "0.2.0"
+      "description": "Crea y mantiene la memoria técnica de un proyecto en cualquier lenguaje o stack (AGENTS.md, PROJECT_STATE, SESSION_HANDOFF…) para retomarlo entre sesiones.",
+      "version": "0.2.1"
     }
   ]
 }

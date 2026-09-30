@@ -1,2 +1,2 @@
-# Keep LF endings so YAML frontmatter parses the same on every OS
+# Mantener saltos de línea LF para que el frontmatter YAML se lea igual en cualquier sistema operativo
 * text=auto eol=lf

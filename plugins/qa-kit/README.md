@@ -1,22 +1,51 @@
 # qa-kit
 
-A small Claude Code plugin with two quality helpers that work in any language: a command that summarises the changes on your branch, and a subagent that reviews recent code.
+Plugin pequeño de Claude Code con dos ayudas de calidad que funcionan en cualquier lenguaje: un comando que resume los cambios de tu rama y un subagente que revisa el código reciente.
 
-Install: `/plugin marketplace add bastidasb7-star/claude-plugins` then `/plugin install qa-kit@bryan-plugins`.
+Forma parte del marketplace [bryan-plugins](../../README.md).
 
-## What it adds
+## Instalar
 
-| Component | Type | What it does |
-|---|---|---|
-| `/qa-kit:summarize-changes` | Slash command | Compares the branch with its base (`/qa-kit:summarize-changes [base]`, default: the repo default branch) using git only, and returns a PR-ready summary: what the branch does, one line per file, and notes on breaking changes, migrations or new dependencies. |
-| `code-reviewer` | Subagent | Reviews recent changes in any language for bugs, missing error handling, unclear names and obvious security issues, using each language's idioms. Returns findings grouped by severity (high, medium, low), each naming the file and the fix. Uses read-only tools (Read, Grep, Glob). |
-
-## Structure
-
+```text
+/plugin marketplace add bastidasb7-star/claude-plugins
+/plugin install qa-kit@bryan-plugins
 ```
-.
+
+Desde la terminal (por ejemplo, si usas la extensión de VS Code, donde `/plugin` no está disponible):
+
+```bash
+claude plugin marketplace add bastidasb7-star/claude-plugins
+claude plugin install qa-kit@bryan-plugins
+```
+
+## Qué añade
+
+| Componente | Tipo | Qué hace |
+|------------|------|----------|
+| `/qa-kit:summarize-changes [rama-base]` | Comando | Compara la rama con su base (por defecto, la rama principal del repo) usando solo git y devuelve un resumen listo para el PR: qué hace la rama, una línea por archivo y notas sobre cambios incompatibles, migraciones o dependencias nuevas. |
+| `qa-kit:code-reviewer` | Subagente | Revisa los cambios recientes en cualquier lenguaje buscando bugs, errores sin manejar, nombres poco claros y problemas de seguridad evidentes, con el estilo de cada lenguaje. Devuelve los hallazgos agrupados por severidad (alta, media, baja), cada uno con archivo y arreglo. Solo usa herramientas de lectura (`Read, Grep, Glob`). |
+
+## Uso
+
+Dentro de Claude Code:
+
+- Ejecuta `/qa-kit:summarize-changes` para obtener el resumen de la rama.
+- Pide algo como "revisa mis cambios recientes" y Claude delegará en el subagente `code-reviewer`. También puedes nombrarlo directamente: "usa el agente code-reviewer".
+
+Para probarlo sin instalarlo, desde la raíz de este repo:
+
+```bash
+claude --plugin-dir plugins/qa-kit
+```
+
+Después de editar cualquier archivo del plugin, ejecuta `/reload-plugins` para cargar los cambios.
+
+## Estructura
+
+```text
+plugins/qa-kit/
 ├── .claude-plugin/
-│   └── plugin.json            # manifest: name + version
+│   └── plugin.json            # manifiesto: name + version
 ├── commands/
 │   └── summarize-changes.md
 ├── agents/
@@ -24,26 +53,10 @@ Install: `/plugin marketplace add bastidasb7-star/claude-plugins` then `/plugin 
 └── README.md
 ```
 
-Only `plugin.json` lives inside `.claude-plugin/`. The component folders sit at the plugin root.
+Dentro de `.claude-plugin/` solo va `plugin.json`. Las carpetas de componentes están en la raíz del plugin.
 
-## Usage
-
-Load the plugin locally from the repo root:
+## Validación
 
 ```bash
-claude --plugin-dir .
-```
-
-Then, inside Claude Code:
-
-- Run `/qa-kit:summarize-changes` to get a summary of the branch.
-- Ask something like "review my recent changes" and Claude will delegate to the `code-reviewer` subagent. You can also name it directly: "use the code-reviewer agent".
-- After editing any plugin file, run `/reload-plugins` to pick up the changes.
-
-## Validation
-
-The **Validate plugin** GitHub Action runs on every push. It checks that the manifest exists, is valid JSON and has a name, that component folders are at the root, and that at least one component is present. Run it locally with:
-
-```bash
-node .github/scripts/validate-plugin.js
+claude plugin validate plugins/qa-kit
 ```

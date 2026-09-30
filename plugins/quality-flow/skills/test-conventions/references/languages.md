@@ -1,14 +1,14 @@
-# Per-language test reference
+# Referencia de tests por lenguaje
 
-Use the section for the project's language. "Default runner" is only for projects that have no tests yet.
+Usar la sección del lenguaje del proyecto. El "runner por defecto" es solo para proyectos que todavía no tienen tests.
 
 ## JavaScript / TypeScript
 
-- **Default runner:** `vitest` for Vite/TS projects, otherwise `node:test` (no dependency). Keep `jest` if it's already there.
-- **Files:** `*.test.ts` / `*.test.js` next to the code or in `tests/`/`__tests__/`.
-- **HTTP:** `supertest` against the exported app (`request(app).get('/users')`); export the app without calling `listen()`.
-- **Run:** `npm test` (or `npx vitest run`, `node --test`).
-- **Known bug:** `test('…', { todo: 'bug: …' }, fn)` (node:test), `it.todo` / `test.fails` (vitest), `test.failing` (jest).
+- **Runner por defecto:** `vitest` en proyectos Vite/TS; si no, `node:test` (sin dependencias). Mantener `jest` si ya está.
+- **Archivos:** `*.test.ts` / `*.test.js` junto al código o en `tests/`/`__tests__/`.
+- **HTTP:** `supertest` contra la app exportada (`request(app).get('/users')`); exportar la app sin llamar a `listen()`.
+- **Ejecutar:** `npm test` (o `npx vitest run`, `node --test`).
+- **Bug conocido:** `test('…', { todo: 'bug: …' }, fn)` (node:test), `it.todo` / `test.fails` (vitest), `test.failing` (jest).
 
 ```js
 test('POST /users returns 400 when email is missing', async () => {
@@ -19,11 +19,11 @@ test('POST /users returns 400 when email is missing', async () => {
 
 ## Python
 
-- **Default runner:** `pytest`. Keep `unittest` if the project uses it.
-- **Files:** `tests/test_<module>.py`; functions `test_<behaviour>`; shared fixtures in `conftest.py`.
-- **HTTP:** FastAPI/Starlette `TestClient`, Flask `app.test_client()`, Django `self.client` / `pytest-django`.
-- **Run:** `pytest` (or `python -m pytest -q`).
-- **Known bug:** `@pytest.mark.xfail(reason="bug: …", strict=True)`; unittest: `@unittest.expectedFailure`.
+- **Runner por defecto:** `pytest`. Mantener `unittest` si el proyecto lo usa.
+- **Archivos:** `tests/test_<modulo>.py`; funciones `test_<comportamiento>`; fixtures compartidas en `conftest.py`.
+- **HTTP:** `TestClient` de FastAPI/Starlette, `app.test_client()` de Flask, `self.client` de Django / `pytest-django`.
+- **Ejecutar:** `pytest` (o `python -m pytest -q`).
+- **Bug conocido:** `@pytest.mark.xfail(reason="bug: …", strict=True)`; en unittest: `@unittest.expectedFailure`.
 
 ```python
 def test_create_user_rejects_empty_email(client):
@@ -33,11 +33,11 @@ def test_create_user_rejects_empty_email(client):
 
 ## Go
 
-- **Runner:** `go test` (standard library `testing`), table-driven tests with `t.Run`.
-- **Files:** `<file>_test.go` in the same package; `TestXxx(t *testing.T)`.
+- **Runner:** `go test` (librería estándar `testing`), tests por tabla con `t.Run`.
+- **Archivos:** `<archivo>_test.go` en el mismo paquete; `TestXxx(t *testing.T)`.
 - **HTTP:** `net/http/httptest` (`httptest.NewRecorder()`, `httptest.NewServer`).
-- **Run:** `go test ./...`.
-- **Known bug:** `t.Skip("bug: …")` at the top of the test.
+- **Ejecutar:** `go test ./...`.
+- **Bug conocido:** `t.Skip("bug: …")` al principio del test.
 
 ```go
 func TestGetUser_NotFound(t *testing.T) {
@@ -49,39 +49,39 @@ func TestGetUser_NotFound(t *testing.T) {
 
 ## Rust
 
-- **Runner:** `cargo test`. Unit tests in a `#[cfg(test)] mod tests` in the same file; integration tests in `tests/`.
-- **HTTP:** axum/tower `ServiceExt::oneshot`, actix `test::init_service` + `test::call_service`.
-- **Run:** `cargo test`.
-- **Known bug:** `#[ignore = "bug: …"]` (or `#[should_panic]` only when panicking is the intended behaviour).
+- **Runner:** `cargo test`. Tests unitarios en un `#[cfg(test)] mod tests` dentro del mismo archivo; tests de integración en `tests/`.
+- **HTTP:** `ServiceExt::oneshot` de axum/tower, `test::init_service` + `test::call_service` de actix.
+- **Ejecutar:** `cargo test`.
+- **Bug conocido:** `#[ignore = "bug: …"]` (o `#[should_panic]` solo cuando el pánico es el comportamiento esperado).
 
 ## Java / Kotlin
 
-- **Default runner:** JUnit 5 (+ AssertJ if present); Kotlin may use Kotest if already in use.
-- **Files:** `src/test/java/.../<Class>Test.java` mirroring the main package.
-- **HTTP:** Spring `MockMvc` / `WebTestClient` with `@WebMvcTest` or `@SpringBootTest`.
-- **Run:** `./mvnw test` or `./gradlew test`.
-- **Known bug:** `@Disabled("bug: …")`.
+- **Runner por defecto:** JUnit 5 (+ AssertJ si está); Kotlin puede usar Kotest si ya se usa.
+- **Archivos:** `src/test/java/.../<Clase>Test.java`, replicando el paquete principal.
+- **HTTP:** `MockMvc` / `WebTestClient` de Spring con `@WebMvcTest` o `@SpringBootTest`.
+- **Ejecutar:** `./mvnw test` o `./gradlew test`.
+- **Bug conocido:** `@Disabled("bug: …")`.
 
 ## C# / .NET
 
-- **Default runner:** xUnit (keep NUnit/MSTest if present).
-- **Files:** a `<Project>.Tests` project; classes `<Class>Tests`, methods `Method_Scenario_Expected`.
+- **Runner por defecto:** xUnit (mantener NUnit/MSTest si ya están).
+- **Archivos:** un proyecto `<Proyecto>.Tests`; clases `<Clase>Tests`, métodos `Metodo_Escenario_Esperado`.
 - **HTTP:** `WebApplicationFactory<Program>` + `HttpClient`.
-- **Run:** `dotnet test`.
-- **Known bug:** `[Fact(Skip = "bug: …")]` (xUnit), `[Ignore("bug: …")]` (NUnit/MSTest).
+- **Ejecutar:** `dotnet test`.
+- **Bug conocido:** `[Fact(Skip = "bug: …")]` (xUnit), `[Ignore("bug: …")]` (NUnit/MSTest).
 
 ## PHP
 
-- **Default runner:** PHPUnit (keep Pest if present).
-- **Files:** `tests/Unit`, `tests/Feature`; classes `<Thing>Test` extending `TestCase`, methods `test_…`.
+- **Runner por defecto:** PHPUnit (mantener Pest si ya está).
+- **Archivos:** `tests/Unit`, `tests/Feature`; clases `<Algo>Test` que extienden `TestCase`, métodos `test_…`.
 - **HTTP:** Laravel `$this->postJson('/users', [...])->assertStatus(400)`; Symfony `WebTestCase`.
-- **Run:** `vendor/bin/phpunit` (or `php artisan test`, `vendor/bin/pest`).
-- **Known bug:** `$this->markTestIncomplete('bug: …');`.
+- **Ejecutar:** `vendor/bin/phpunit` (o `php artisan test`, `vendor/bin/pest`).
+- **Bug conocido:** `$this->markTestIncomplete('bug: …');`.
 
 ## Ruby
 
-- **Default runner:** RSpec (keep Minitest if present).
-- **Files:** `spec/**/*_spec.rb` (RSpec) or `test/**/*_test.rb` (Minitest).
-- **HTTP:** Rails request specs (`post "/users", params: {...}`), `rack-test` for Sinatra.
-- **Run:** `bundle exec rspec` or `bin/rails test`.
-- **Known bug:** `pending "bug: …"` (RSpec), `skip "bug: …"` (Minitest).
+- **Runner por defecto:** RSpec (mantener Minitest si ya está).
+- **Archivos:** `spec/**/*_spec.rb` (RSpec) o `test/**/*_test.rb` (Minitest).
+- **HTTP:** request specs de Rails (`post "/users", params: {...}`), `rack-test` para Sinatra.
+- **Ejecutar:** `bundle exec rspec` o `bin/rails test`.
+- **Bug conocido:** `pending "bug: …"` (RSpec), `skip "bug: …"` (Minitest).
