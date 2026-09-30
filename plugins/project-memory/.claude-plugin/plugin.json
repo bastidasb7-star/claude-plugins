@@ -1,0 +1,11 @@
+{
+  "name": "project-memory",
+  "version": "0.1.0",
+  "description": "Crea y mantiene la memoria técnica de un proyecto (AGENTS.md, CLAUDE.md, docs/PROJECT_STATE.md, SESSION_HANDOFF.md…) para retomarlo entre sesiones sin perder contexto.",
+  "author": {
+    "name": "Bryan Bastidas"
+  },
+  "repository": "https://github.com/bastidasb7-star/claude-plugins",
+  "license": "MIT",
+  "keywords": ["documentation", "handoff", "project-state", "continuity", "agents-md"]
+}

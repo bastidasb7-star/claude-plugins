@@ -18,6 +18,12 @@
       "source": "./plugins/quality-flow",
       "description": "Review, map test gaps and write missing tests for an Express API with one command.",
       "version": "0.1.0"
+    },
+    {
+      "name": "project-memory",
+      "source": "./plugins/project-memory",
+      "description": "Create and maintain a project's technical memory (AGENTS.md, PROJECT_STATE, SESSION_HANDOFF…) for continuity across sessions.",
+      "version": "0.1.0"
     }
   ]
 }
