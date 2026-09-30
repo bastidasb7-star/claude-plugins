@@ -1,6 +1,6 @@
 {
   "name": "quality-flow",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Code-quality workflow for any language: a read-only reviewer and coverage mapper run in parallel, then a test writer adds the missing tests with the project's own runner.",
   "author": {
     "name": "Bryan Bastidas"

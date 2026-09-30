@@ -1,365 +1,95 @@
+"""Crea la estructura base de memoria técnica de un proyecto (cualquier lenguaje).
+
+Copia las plantillas de ../templates al proyecto sin sobrescribir archivos
+existentes. No añade nada específico de un lenguaje al proyecto.
+
+Uso:
+    python bootstrap_project.py [ruta]          # crea lo que falte
+    python bootstrap_project.py --check [ruta]  # solo comprueba qué falta
+"""
 from pathlib import Path
 import argparse
 import sys
 
-AGENTS_MD = """# Instrucciones del repositorio
+TEMPLATES = Path(__file__).resolve().parent.parent / "templates"
 
-## Lectura inicial
-Antes de cambios significativos leer:
-1. `docs/PROJECT_STATE.md`
-2. `docs/SESSION_HANDOFF.md`
-3. `docs/PROJECT.md`
-
-Leer después solo la documentación relacionada con la tarea.
-
-## Fuente de verdad
-El código, configuración, migraciones y tests actuales tienen prioridad sobre documentación desactualizada.
-
-## Continuidad
-Después de un cambio significativo actualizar `docs/PROJECT_STATE.md` y `docs/SESSION_HANDOFF.md`, además de la documentación técnica afectada.
-
-No guardar secretos, contraseñas, tokens ni claves en documentación.
-"""
-
-CLAUDE_MD = """# Instrucciones del repositorio (Claude Code)
-
-Lee `AGENTS.md` en la raíz de este repositorio y síguelo: contiene las reglas de trabajo, qué documentos de `docs/` leer primero y cómo mantener la continuidad entre sesiones.
-"""
-
-PROJECT_SKILL_MD = """---
-name: project
-description: Trabajar y dar continuidad al proyecto actual usando su estado, handoff, arquitectura, runbook, reglas de negocio y decisiones.
----
-
-# Continuidad del proyecto
-
-Antes de trabajar:
-1. leer `AGENTS.md`;
-2. leer `docs/PROJECT_STATE.md`;
-3. leer `docs/SESSION_HANDOFF.md`;
-4. leer `docs/PROJECT.md`;
-5. leer solo documentación relacionada con la tarea.
-
-Después de cambios significativos:
-1. actualizar `PROJECT_STATE.md`;
-2. actualizar `SESSION_HANDOFF.md`;
-3. actualizar documentación técnica afectada;
-4. actualizar decisiones, pendientes y worklog cuando corresponda.
-
-El código real es la fuente de verdad.
-No guardar secretos.
-"""
-
-FILES = {
-"AGENTS.md": AGENTS_MD,
-"CLAUDE.md": CLAUDE_MD,
-"docs/INDEX.md": """# Índice de documentación
-
-- `PROJECT.md`: descripción estable.
-- `PROJECT_STATE.md`: estado actual.
-- `SESSION_HANDOFF.md`: punto exacto para retomar.
-- `ARCHITECTURE.md`: arquitectura.
-- `RUNBOOK.md`: ejecución y verificación.
-- `DATABASE.md`: datos/persistencia.
-- `API.md`: contratos.
-- `BUSINESS_RULES.md`: reglas funcionales.
-- `DECISIONS.md`: decisiones duraderas.
-- `TODO.md`: pendientes.
-- `WORKLOG.md`: cambios significativos.
-""",
-"docs/PROJECT.md": """# Proyecto
-
-Última actualización: Por completar
-
-## Nombre
-Por completar.
-
-## Propósito
-Por completar.
-
-## Usuarios o actores
-Por completar.
-
-## Módulos principales
-Por completar.
-
-## Stack confirmado
-Por completar.
-
-## Estructura principal
-Por completar.
-
-## Integraciones externas
-Por completar.
-
-## Restricciones importantes
-Por completar.
-""",
-"docs/PROJECT_STATE.md": """# Estado actual del proyecto
-
-Última actualización: Por completar
-
-## Funcionando
-- Por completar.
-
-## En desarrollo
-- Por completar.
-
-## En pruebas
-- Por completar.
-
-## Problemas conocidos
-- Por completar.
-
-## Áreas delicadas
-- Por completar.
-
-## Próximo objetivo recomendado
-- Por completar.
-""",
-"docs/SESSION_HANDOFF.md": """# Handoff de la sesión
-
-Actualizado: Por completar
-
-## Objetivo en curso
-Por completar.
-
-## Último trabajo realizado
-Por completar.
-
-## Archivos o módulos clave
-- Por completar.
-
-## Verificación realizada
-- Por completar.
-
-## Falta por hacer
-- Por completar.
-
-## Siguiente paso concreto
-Por completar.
-
-## Advertencias / contexto
-- Por completar.
-""",
-"docs/ARCHITECTURE.md": """# Arquitectura
-
-Última actualización: Por completar
-
-## Vista general
-Por completar.
-
-## Componentes
-Por completar.
-
-## Flujo principal
-Por completar.
-
-## Dependencias internas
-Por completar.
-
-## Integraciones externas
-Por completar.
-
-## Riesgos técnicos
-Por completar.
-""",
-"docs/RUNBOOK.md": """# Runbook
-
-Última actualización: Por completar
-
-Documentar únicamente comandos comprobados.
-
-## Requisitos
-Por completar.
-
-## Instalación
-Por confirmar.
-
-## Configuración
-Por completar.
-
-## Ejecutar
-Por confirmar.
-
-## Pruebas
-Por confirmar.
-
-## Lint / validaciones
-Por confirmar.
-
-## Build
-Por confirmar.
-
-## Migraciones
-No aplica o por confirmar.
-
-## Despliegue
-No aplica o por confirmar.
-""",
-"docs/DATABASE.md": """# Base de datos y persistencia
-
-Última actualización: Por completar
-
-Si no existe persistencia, indicar `No aplica`.
-
-## Motor / tecnología
-Por confirmar.
-
-## Entidades o tablas
-Por completar.
-
-## Relaciones
-Por completar.
-
-## Restricciones
-Por completar.
-
-## Migraciones
-Por completar.
-
-## Integridad / riesgos
-Por completar.
-""",
-"docs/API.md": """# API
-
-Última actualización: Por completar
-
-Si no existe API relevante, indicar `No aplica`.
-
-## Autenticación
-Por confirmar.
-
-## Endpoints
-Por completar.
-
-## Contratos
-Por completar.
-
-## Roles
-Por completar.
-
-## Errores
-Por completar.
-""",
-"docs/BUSINESS_RULES.md": """# Reglas de negocio
-
-Última actualización: Por completar
-
-## Reglas confirmadas
-- Por completar.
-
-## Permisos / roles
-- Por completar.
-
-## Validaciones críticas
-- Por completar.
-
-## Flujos que no deben romperse
-- Por completar.
-
-## Por confirmar
-- Por completar.
-""",
-"docs/DECISIONS.md": """# Decisiones
-
-Registrar solo decisiones con impacto duradero.
-
-Todavía no hay decisiones registradas.
-""",
-"docs/TODO.md": """# Pendientes
-
-Última actualización: Por completar
-
-## Alta
-- [ ] Por completar.
-
-## Media
-- [ ] Por completar.
-
-## Baja
-- [ ] Por completar.
-
-## Bloqueados
-- [ ] Por completar.
-""",
-"docs/WORKLOG.md": """# Historial de trabajo
-
-Registrar cambios significativos, no conversaciones completas.
-
-Todavía no hay cambios registrados.
-""",
-".agents/skills/project/SKILL.md": PROJECT_SKILL_MD,
-".claude/skills/project/SKILL.md": PROJECT_SKILL_MD,
-"scripts/project_docs_check.py": """from pathlib import Path
-import sys
-
+# Documentos que todo proyecto debe tener; el resto de plantillas es opcional
+# (API, base de datos, skills locales) y solo se informa en --check.
 REQUIRED = [
-    'AGENTS.md',
-    'docs/INDEX.md',
-    'docs/PROJECT.md',
-    'docs/PROJECT_STATE.md',
-    'docs/SESSION_HANDOFF.md',
-    'docs/ARCHITECTURE.md',
-    'docs/RUNBOOK.md',
-    'docs/BUSINESS_RULES.md',
-    'docs/DECISIONS.md',
-    'docs/TODO.md',
-    'docs/WORKLOG.md',
+    "AGENTS.md",
+    "CLAUDE.md",
+    "docs/INDEX.md",
+    "docs/PROJECT.md",
+    "docs/PROJECT_STATE.md",
+    "docs/SESSION_HANDOFF.md",
+    "docs/ARCHITECTURE.md",
+    "docs/RUNBOOK.md",
+    "docs/BUSINESS_RULES.md",
+    "docs/DECISIONS.md",
+    "docs/TODO.md",
+    "docs/WORKLOG.md",
 ]
 
-OPTIONAL = [
-    'CLAUDE.md',
-    'docs/DATABASE.md',
-    'docs/API.md',
-    '.agents/skills/project/SKILL.md',
-    '.claude/skills/project/SKILL.md',
-]
 
-root = Path(sys.argv[1]).resolve() if len(sys.argv) > 1 else Path.cwd()
-missing = [p for p in REQUIRED if not (root / p).exists()]
-print('Proyecto:', root)
-if missing:
-    print('Faltan:')
-    for p in missing:
-        print(' -', p)
-    raise SystemExit(1)
-print('Documentación base: OK')
-""",
-}
+def template_files():
+    return sorted(p.relative_to(TEMPLATES).as_posix() for p in TEMPLATES.rglob("*") if p.is_file())
 
-def main():
-    parser = argparse.ArgumentParser(
-        description="Crea la estructura base de continuidad de proyecto (multi-IA) sin sobrescribir archivos."
-    )
-    parser.add_argument("project", nargs="?", default=".", help="Ruta del proyecto")
-    args = parser.parse_args()
 
-    root = Path(args.project).expanduser().resolve()
-    root.mkdir(parents=True, exist_ok=True)
-
-    created, skipped = [], []
-    for rel, content in FILES.items():
-        p = root / rel
-        if p.exists():
-            skipped.append(rel)
+def bootstrap(root):
+    created, kept = [], []
+    for rel in template_files():
+        target = root / rel
+        if target.exists():
+            kept.append(rel)
             continue
-        p.parent.mkdir(parents=True, exist_ok=True)
-        p.write_text(content, encoding="utf-8", newline="\n")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_bytes((TEMPLATES / rel).read_bytes())
         created.append(rel)
 
     print(f"Proyecto: {root}")
     print(f"Creados: {len(created)}")
-    for p in created:
-        print(f"  + {p}")
-    if skipped:
-        print(f"Conservados (ya existían): {len(skipped)}")
-        for p in skipped:
-            print(f"  = {p}")
+    for rel in created:
+        print(f"  + {rel}")
+    if kept:
+        print(f"Conservados (ya existían): {len(kept)}")
+        for rel in kept:
+            print(f"  = {rel}")
+    print("\nSiguiente paso: completar la documentación con hechos comprobados en el código.")
 
-    print("\nSiguiente paso:")
-    print("Pide a tu asistente de IA (Claude Code, Codex u otro) que analice el repositorio")
-    print("y complete la documentación con hechos comprobados.")
+
+def check(root):
+    missing = [rel for rel in REQUIRED if not (root / rel).exists()]
+    pending = [rel for rel in REQUIRED if (root / rel).exists()
+               and "Por completar" in (root / rel).read_text(encoding="utf-8", errors="ignore")]
+    print(f"Proyecto: {root}")
+    if missing:
+        print("Faltan:")
+        for rel in missing:
+            print(f"  - {rel}")
+    if pending:
+        print("Aún con 'Por completar':")
+        for rel in pending:
+            print(f"  ~ {rel}")
+    if not missing and not pending:
+        print("Documentación base: OK")
+    return 1 if missing else 0
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("project", nargs="?", default=".", help="Ruta del proyecto")
+    parser.add_argument("--check", action="store_true", help="Solo comprobar, no crear nada")
+    args = parser.parse_args()
+    # Windows consoles default to a legacy code page; keep accents readable.
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
+
+    root = Path(args.project).expanduser().resolve()
+    if args.check:
+        sys.exit(check(root))
+    root.mkdir(parents=True, exist_ok=True)
+    bootstrap(root)
+
 
 if __name__ == "__main__":
     main()

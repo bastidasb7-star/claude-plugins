@@ -67,7 +67,7 @@ The hook uses only tools the project or machine already has; if none is found it
 | `.sh .bash` | `shellcheck` → `bash -n` |
 | `.json` | built-in JSON parse (skips `tsconfig`, `.vscode`, etc., which allow comments) |
 
-Requires Node.js on the PATH to run the hook script. Compiled languages (Java, C#, Rust, C/C++) are checked by the test-writer's build/test run instead of per edit.
+The hook script runs on Node.js when it is on the PATH; without Node the hook is skipped silently. Compiled languages (Java, C#, Rust, C/C++) are checked by the test-writer's build/test run instead of per edit.
 
 ## Layout
 

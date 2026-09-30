@@ -19,7 +19,7 @@ Para actualizar después de un cambio: `/plugin marketplace update bryan-plugins
 |--------|-------------|-----|
 | [qa-kit](plugins/qa-kit) | Comando `summarize-changes` (resumen de la rama para el PR, solo git) + subagente `code-reviewer` (solo lectura, cualquier lenguaje) | `/qa-kit:summarize-changes [rama-base]` antes de abrir un PR |
 | [quality-flow](plugins/quality-flow) | 3 subagentes (reviewer, coverage-mapper, test-writer), comando `audit`, skill `test-conventions` con referencia por lenguaje, hook de lint multi-lenguaje (ESLint, ruff/flake8, gofmt, php -l, ruby -wc, shellcheck, JSON) | `/quality-flow:audit [ruta]` en cualquier proyecto |
-| [project-memory](plugins/project-memory) | Skill `project-bootstrap` + script que genera `AGENTS.md`, `CLAUDE.md` y `docs/` (estado, handoff, arquitectura…) | `/project-memory:project-bootstrap` en la raíz de un repo |
+| [project-memory](plugins/project-memory) | Skill `project-bootstrap` + plantillas que generan `AGENTS.md`, `CLAUDE.md` y `docs/` (estado, handoff, arquitectura…) para cualquier stack; Python opcional | `/project-memory:project-bootstrap` en la raíz de un repo |
 
 ## Estructura
 

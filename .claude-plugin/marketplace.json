@@ -17,13 +17,13 @@
       "name": "quality-flow",
       "source": "./plugins/quality-flow",
       "description": "Review, map test gaps and write missing tests in any language (JS/TS, Python, Go, Rust, Java, C#, PHP, Ruby) with one command.",
-      "version": "0.2.0"
+      "version": "0.2.1"
     },
     {
       "name": "project-memory",
       "source": "./plugins/project-memory",
-      "description": "Create and maintain a project's technical memory (AGENTS.md, PROJECT_STATE, SESSION_HANDOFF…) for continuity across sessions.",
-      "version": "0.1.0"
+      "description": "Create and maintain a project's technical memory in any language or stack (AGENTS.md, PROJECT_STATE, SESSION_HANDOFF…) for continuity across sessions.",
+      "version": "0.2.0"
     }
   ]
 }

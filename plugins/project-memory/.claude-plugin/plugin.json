@@ -1,7 +1,7 @@
 {
   "name": "project-memory",
-  "version": "0.1.0",
-  "description": "Crea y mantiene la memoria técnica de un proyecto (AGENTS.md, CLAUDE.md, docs/PROJECT_STATE.md, SESSION_HANDOFF.md…) para retomarlo entre sesiones sin perder contexto.",
+  "version": "0.2.0",
+  "description": "Crea y mantiene la memoria técnica de un proyecto en cualquier lenguaje o stack (AGENTS.md, CLAUDE.md, docs/PROJECT_STATE.md, SESSION_HANDOFF.md…) para retomarlo entre sesiones sin perder contexto.",
   "author": {
     "name": "Bryan Bastidas"
   },

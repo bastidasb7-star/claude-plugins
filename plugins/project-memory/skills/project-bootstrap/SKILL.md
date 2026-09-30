@@ -1,6 +1,6 @@
 ---
 name: project-bootstrap
-description: Inicializa o actualiza la memoria técnica de un proyecto de software. Usar al comenzar un repositorio nuevo o existente que necesite continuidad entre sesiones, documentación base, arquitectura, estado actual, reglas de negocio, API, base de datos, runbook y handoff.
+description: Inicializa o actualiza la memoria técnica de un proyecto de software en cualquier lenguaje o stack (JS/TS, Python, Go, Rust, Java, .NET, PHP, Ruby, móvil, monorepos…). Usar al comenzar un repositorio nuevo o existente que necesite continuidad entre sesiones, documentación base, arquitectura, estado actual, reglas de negocio, API, base de datos, runbook y handoff.
 ---
 
 # Project Bootstrap
@@ -54,57 +54,47 @@ Antes de crear o completar documentos:
 
 1. Identificar la raíz del repositorio.
 2. Revisar estructura de directorios.
-3. Ignorar carpetas generadas o de dependencias:
-   - `.git`
-   - `node_modules`
-   - `dist`
-   - `build`
-   - `target`
-   - `.gradle`
-   - `.venv`
-   - `venv`
-   - `__pycache__`
-   - `.next`
-   - `.angular`
-   - `coverage`
-   - binarios y artefactos grandes.
-4. Detectar manifiestos y archivos de configuración relevantes:
-   - `package.json`
-   - `angular.json`
-   - `pom.xml`
-   - `build.gradle*`
-   - `requirements*.txt`
-   - `pyproject.toml`
-   - `Pipfile`
-   - `Cargo.toml`
-   - `go.mod`
-   - `*.csproj`
-   - `Dockerfile`
-   - `docker-compose*.yml`
-   - configuraciones de CI
+Funciona con cualquier lenguaje o stack. No asumir ninguno: detectarlo.
+
+1. Identificar la raíz del repositorio (y, en un monorepo, cada subproyecto por su propio manifiesto).
+2. Revisar estructura de directorios.
+3. Ignorar carpetas generadas o de dependencias (`.git`, `node_modules`, `vendor`, `dist`, `build`, `target`, `bin`/`obj`, `.venv`, `__pycache__`, `.next`, `.dart_tool`, `Pods`, `coverage`… — lista completa en [references/stacks.md](references/stacks.md)), además de binarios y artefactos grandes.
+4. Detectar manifiestos y configuración de cualquier ecosistema, por ejemplo:
+   - JS/TS: `package.json`, `tsconfig.json`, `deno.json`, `angular.json`
+   - Python: `pyproject.toml`, `requirements*.txt`, `Pipfile`
+   - Go: `go.mod` · Rust: `Cargo.toml`
+   - Java/Kotlin/Scala: `pom.xml`, `build.gradle*`, `build.sbt`
+   - .NET: `*.sln`, `*.csproj`
+   - PHP: `composer.json` · Ruby: `Gemfile` · Elixir: `mix.exs`
+   - Dart/Flutter: `pubspec.yaml` · Swift: `Package.swift` · C/C++: `CMakeLists.txt`, `Makefile`
+   - `Dockerfile`, `docker-compose*.yml`, infraestructura (`*.tf`, `k8s/`), configuraciones de CI
    - migraciones de base de datos.
 5. Detectar módulos principales.
-6. Detectar tests.
-7. Detectar comandos de ejecución, build, lint y pruebas.
+6. Detectar tests y su runner.
+7. Detectar comandos de ejecución, build, lint y pruebas **desde los archivos** (scripts del manifiesto, `Makefile`, CI), nunca de memoria.
 8. Detectar API y datos solo cuando sean relevantes.
+
+Para saber dónde buscar comandos, migraciones y rutas en cada stack, consultar [references/stacks.md](references/stacks.md).
 
 ## Paso 2 — crear estructura base
 
-Si faltan archivos, usar el script incluido en esta skill (`scripts/bootstrap_project.py`):
+Las plantillas están en la carpeta `templates/` de esta skill (misma estructura que debe quedar en el proyecto). Copiar las que falten **sin sobrescribir nunca un archivo existente**. Usar la primera opción disponible:
 
 ```bash
-# Instalada como plugin de Claude Code (project-memory)
-python "${CLAUDE_PLUGIN_ROOT}/skills/project-bootstrap/scripts/bootstrap_project.py" .
+# SKILL_DIR = "${CLAUDE_PLUGIN_ROOT}/skills/project-bootstrap" instalada como plugin de Claude Code,
+#             ~/.agents/skills/project-bootstrap en Codex,
+#             o la carpeta base de esta skill que se indica al cargarla.
 
-# Instalada como skill suelta en Codex (~/.agents/skills)
-python ~/.agents/skills/project-bootstrap/scripts/bootstrap_project.py .
+# a) Con Python 3 (python, python3 o py en Windows) — informa qué creó y qué conservó
+python "$SKILL_DIR/scripts/bootstrap_project.py" .
+
+# b) Sin Python, con cualquier shell POSIX (bash, Git Bash, macOS, Linux)
+cp -Rn "$SKILL_DIR/templates/." .
 ```
 
-Si la variable no se resolvió, usar la carpeta base de esta skill (la que se indica al cargarla) + `scripts/bootstrap_project.py`. En Windows, si `python` no existe, probar con `py`.
+c) Si no hay shell disponible, leer cada archivo de `templates/` y crearlo con la herramienta de escritura solo si no existe.
 
-El script no debe sobrescribir archivos existentes.
-
-Si no es posible ejecutar el script, crear manualmente la misma estructura usando las plantillas que contiene `scripts/bootstrap_project.py`.
+No se añade al proyecto ningún script ni archivo de un lenguaje concreto: solo Markdown.
 
 ## Paso 3 — completar documentación
 
@@ -278,7 +268,7 @@ Antes de finalizar:
 3. comprobar que no se registraron secretos;
 4. comprobar que los comandos documentados existen;
 5. comprobar que `PROJECT_STATE.md` y `SESSION_HANDOFF.md` contienen el estado actual;
-6. ejecutar `python scripts/project_docs_check.py` si el script existe.
+6. comprobar que existen los documentos obligatorios y que no queda ningún `Por completar` sin revisar: `python "$SKILL_DIR/scripts/bootstrap_project.py" --check .` o, sin Python, `grep -rl "Por completar" AGENTS.md CLAUDE.md docs/`. (Proyectos iniciados con la versión anterior pueden tener `scripts/project_docs_check.py`; si existe, también se puede ejecutar.)
 
 ## Actualización de un proyecto ya inicializado
 
