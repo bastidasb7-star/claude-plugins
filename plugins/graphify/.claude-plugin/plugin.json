@@ -1,0 +1,18 @@
+{
+  "name": "graphify",
+  "version": "0.9.87",
+  "description": "Convierte un proyecto (código, docs, PDFs, imágenes, vídeo) en un grafo de conocimiento consultable con /graphify, en lugar de buscar archivo por archivo. Requiere la CLI graphifyy.",
+  "author": {
+    "name": "Safi Shamsi y los contribuidores de Graphify (empaquetado por Bryan Bastidas)"
+  },
+  "homepage": "https://github.com/Graphify-Labs/graphify",
+  "repository": "https://github.com/bastidasb7-star/claude-plugins",
+  "license": "Apache-2.0",
+  "keywords": [
+    "knowledge-graph",
+    "codebase",
+    "architecture",
+    "tree-sitter",
+    "graphrag"
+  ]
+}

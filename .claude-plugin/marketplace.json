@@ -24,6 +24,12 @@
       "source": "./plugins/project-memory",
       "description": "Crea y mantiene la memoria técnica de un proyecto en cualquier lenguaje o stack (AGENTS.md, PROJECT_STATE, SESSION_HANDOFF…) para retomarlo entre sesiones.",
       "version": "0.2.1"
+    },
+    {
+      "name": "graphify",
+      "source": "./plugins/graphify",
+      "description": "Convierte un proyecto (código, docs, PDFs, imágenes, vídeo) en un grafo de conocimiento consultable con /graphify. Skill de Graphify-Labs (Apache-2.0); requiere la CLI graphifyy.",
+      "version": "0.9.87"
     }
   ]
 }
