@@ -1,0 +1,3 @@
+[submodule "plugins/rsc-harness"]
+	path = plugins/rsc-harness
+	url = https://github.com/ericrisco/rsc-harness.git

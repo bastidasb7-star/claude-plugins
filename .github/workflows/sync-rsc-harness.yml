@@ -1,0 +1,35 @@
+name: Sync rsc-harness submodule
+
+on:
+  schedule:
+    # Diario, 06:00 UTC. Ajusta si quieres otra frecuencia.
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Actualizar submodulo rsc-harness al ultimo commit de su rama por defecto
+        run: git submodule update --remote plugins/rsc-harness
+
+      - name: Commitear y pushear si hubo cambios
+        run: |
+          if git diff --quiet -- plugins/rsc-harness; then
+            echo "rsc-harness ya esta al dia, nada que commitear."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add plugins/rsc-harness
+          git commit -m "chore: actualizar submodulo rsc-harness"
+          git push
