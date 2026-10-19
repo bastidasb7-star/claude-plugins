@@ -10,6 +10,7 @@ Marketplace de plugins de Claude Code de Bryan Bastidas. Todos los plugins funci
 /plugin install quality-flow@bryan-plugins
 /plugin install project-memory@bryan-plugins
 /plugin install graphify@bryan-plugins   # requiere: uv tool install graphifyy
+/plugin install rsc-harness-installer@bryan-plugins
 ```
 
 Para actualizar después de un cambio: `/plugin marketplace update bryan-plugins`.
@@ -22,6 +23,7 @@ Para actualizar después de un cambio: `/plugin marketplace update bryan-plugins
 | [quality-flow](plugins/quality-flow) | 3 subagentes (reviewer, coverage-mapper, test-writer), comando `audit`, skill `test-conventions` con referencia por lenguaje, hook de lint multi-lenguaje (ESLint, ruff/flake8, gofmt, php -l, ruby -wc, shellcheck, JSON) | `/quality-flow:audit [ruta]` en cualquier proyecto |
 | [project-memory](plugins/project-memory) | Skill `project-bootstrap` + plantillas que generan `AGENTS.md`, `CLAUDE.md` y `docs/` (estado, handoff, arquitectura…) para cualquier stack; Python opcional | `/project-memory:project-bootstrap` en la raíz de un repo |
 | [graphify](plugins/graphify) | Skill `graphify` de terceros ([Graphify-Labs](https://github.com/Graphify-Labs/graphify), Apache-2.0): grafo de conocimiento del proyecto. Necesita la CLI `graphifyy` | `/graphify:graphify .` |
+| [rsc-harness-installer](plugins/rsc-harness-installer) | Comando que instala [rsc-harness](https://github.com/ericrisco/rsc-harness) (ericrisco) en el proyecto actual corriendo su CLI oficial (`npx @ericrisco/rsc@latest onboard`) y siguiendo su onboarding interactivo | `/rsc-harness-installer:install` |
 
 ## Estructura
 
@@ -32,6 +34,10 @@ plugins/
   quality-flow/                   # origen: bastidasb7-star/claude-multi-agent-workflow
   project-memory/                 # origen: skill local ~/.claude/skills/project-bootstrap
   graphify/                       # origen: Graphify-Labs/graphify v0.9.87 (Apache-2.0, sin modificar)
+  rsc-harness-installer/          # plugin propio: comando que instala rsc-harness via su CLI oficial
+  rsc-harness/                    # submodulo (ericrisco/rsc-harness): codigo fuente vendorizado, NO es un
+                                   # plugin cargable (sin .claude-plugin/) -se sincroniza solo via el
+                                   # workflow .github/workflows/sync-rsc-harness.yml (diario)
 ```
 
 ## Añadir un plugin nuevo
